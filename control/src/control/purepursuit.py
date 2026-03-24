@@ -1,0 +1,55 @@
+from __future__ import division
+import numpy as np
+
+from control.controller import BaseController
+from control.controller import compute_position_in_frame
+
+
+class PurePursuitController(BaseController):
+    def __init__(self, **kwargs):
+        self.car_length = kwargs.pop("car_length")
+
+        # Get the keyword args that we didn't consume with the above initialization
+        super(PurePursuitController, self).__init__(**kwargs)
+
+
+    def get_error(self, pose, reference_xytv):
+        """Compute the Pure Pursuit error.
+
+        Args:
+            pose: current state of the vehicle [x, y, heading]
+            reference_xytv: reference state and speed
+
+        Returns:
+            error: Pure Pursuit error
+        """
+        return compute_position_in_frame(reference_xytv[:3], pose)
+
+    def get_control(self, pose, reference_xytv, error):
+        """Compute the Pure Pursuit control law.
+
+        Args:
+            pose: current state of the vehicle [x, y, heading]
+            reference_xytv: reference state and speed
+            error: error vector from get_error
+
+
+        Returns:
+            control: np.array of velocity and steering angle
+        """
+        # BEGIN QUESTION 3.1
+        "*** REPLACE THIS LINE ***"
+        lookahead = 0.1 # hard-coded value from parameters.yaml
+        
+        a = error[0] # along-track error
+        b = error[1] # cross-track error
+        
+        # R_pp = (a^2 + b^2) / 2b
+        curve_radius = ((a ** 2) + (b ** 2)) / (2 * b)
+        
+        # steering angle = arctan(L / R_pp), where R_pp = Radius of the pure pursuit curve
+        steering_angle = np.arctan(self.car_length / curve_radius)
+        
+        # velocity stays the same...
+        return np.array([reference_xytv[3], steering_angle])
+        # END QUESTION 3.1
