@@ -1,3 +1,9 @@
+### Project:
+
+Design and developed the software of a [MuSHR](https://mushr.io/), including the perception, localization, planning and control algorithms as a part of a group project. Utilized the [ROS](https://ros.org/) software to build upon.
+
+
+
 # mushr478
 
 ## Usage
